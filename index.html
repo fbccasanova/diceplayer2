@@ -50,7 +50,6 @@
         .cube__face { position: absolute; width: var(--dice-size); height: var(--dice-size); background: white; border: 2px solid #e2e8f0; border-radius: 16px; display: grid; grid-template-areas: "a . b" "c d e" "f . g"; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 12px; backface-visibility: hidden; }
         .pip { display: block; width: var(--pip-size); height: var(--pip-size); border-radius: 50%; background-color: #1e293b; justify-self: center; align-self: center; }
 
-        /* Face Rotations */
         .face-1 { transform: rotateY(0deg) translateZ(50px); }
         .face-2 { transform: rotateY(90deg) translateZ(50px); }
         .face-3 { transform: rotateY(180deg) translateZ(50px); }
@@ -67,21 +66,7 @@
 
         .pos-display { background: rgba(255, 255, 255, 0.15); padding: 8px 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; }
         .adjust-btn { background: rgba(255, 255, 255, 0.2); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        
-        .reset-btn {
-            margin-top: 15px;
-            padding: 8px 25px;
-            background-color: var(--flourish-pink);
-            color: white;
-            border-radius: 99px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: none;
-            box-shadow: 0 4px 0 #b33a80;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .reset-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b33a80; }
+        .reset-btn { margin-top: 15px; padding: 8px 25px; background: var(--flourish-pink); color: white; border-radius: 99px; font-weight: bold; text-transform: uppercase; border: none; box-shadow: 0 4px 0 #b33a80; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -128,7 +113,6 @@
         function updateUI() {
             posText.textContent = `Spot: ${positions[currentPlayer]}`;
             msgBox.textContent = `Player ${currentPlayer}'s Turn`;
-            
             sendHoverlay(`active-player-${currentPlayer}`);
             sendHoverlay(`spot-${positions[currentPlayer]}`);
         }
@@ -172,26 +156,52 @@
                 isRolling = false;
                 
                 sendHoverlay(`dice-${result}`);
-                setTimeout(() => sendHoverlay(`spot-${positions[currentPlayer]}`), 600);
+
+                // --- AUTOMATIC BOARD EVENTS ---
+                let newPos = positions[currentPlayer];
+                let eventMsg = "";
+
+                if (newPos === 1) { // White Radish +1
+                    newPos = 2;
+                    eventMsg = "Radish Power! +1 Spot";
+                } else if (newPos === 3) { // Portal
+                    newPos = 7;
+                    eventMsg = "🌀 Portal Jump to 7!";
+                } else if (newPos === 12) { // Blueberries +3
+                    newPos = 15;
+                    eventMsg = "Berry Boost! +3 Spots";
+                } else if (newPos === 16) { // Burger -2
+                    newPos = 14;
+                    eventMsg = "Burger Slump! -2 Spots";
+                } else if (newPos === 19) { // Fries -5
+                    newPos = 14;
+                    eventMsg = "Fry Trap! -5 Spots";
+                }
+
+                if (newPos !== positions[currentPlayer]) {
+                    setTimeout(() => {
+                        msgBox.textContent = eventMsg;
+                        positions[currentPlayer] = newPos;
+                        localStorage.setItem(`flourish_p${currentPlayer}_pos`, newPos);
+                        posText.textContent = `Spot: ${newPos}`;
+                        sendHoverlay(`spot-${newPos}`);
+                    }, 1200);
+                } else {
+                    // Normal Move
+                    setTimeout(() => sendHoverlay(`spot-${positions[currentPlayer]}`), 600);
+                }
+
             }, 1800);
         }
 
-        
         function resetFullGame() {
-            if (confirm("Ready for a new game?")) {
-                
-                positions[1] = 0;
-                positions[2] = 0;
+            if (confirm("Reset BOTH players?")) {
+                positions[1] = 0; positions[2] = 0;
                 localStorage.setItem('flourish_p1_pos', 0);
                 localStorage.setItem('flourish_p2_pos', 0);
-                
-                // Reset current view
                 currentPlayer = 1;
                 updateUI();
-                
-                // Notify AR Space
                 sendHoverlay('game-reset');
-                msgBox.textContent = "Full Board Reset!";
             }
         }
 
