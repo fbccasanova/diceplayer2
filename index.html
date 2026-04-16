@@ -67,7 +67,7 @@
 
         .pos-display { background: rgba(255, 255, 255, 0.15); padding: 8px 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; }
         .adjust-btn { background: rgba(255, 255, 255, 0.2); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .reset-btn { margin-top: 15px; padding: 6px 15px; background: var(--flourish-pink); color: white; border-radius: 99px; font-weight: bold; border: none; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
+        .reset-btn { margin-top: 15px; padding: 8px 25px; background: var(--flourish-pink); color: white; border-radius: 99px; font-weight: bold; text-transform: uppercase; border: none; box-shadow: 0 4px 0 #b33a80; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -162,33 +162,35 @@
                 let newPos = positions[currentPlayer];
                 let eventMsg = "";
 
-                if (newPos === 1) { // White Radish
-                    newPos = 2;
-                    eventMsg = "Radish Power! +1 Spot";
-                } else if (newPos === 3) { // Portal
-                    newPos = 7;
-                    eventMsg = "🌀 Portal Jump to 7!";
-                } else if (newPos === 5) { // chocolate Trap 1
-                    newPos = 4;
-                    eventMsg = "Chocolate Grease! -1 Spot";
-                } else if (newPos === 12) { // Blueberries
-                    newPos = 15;
-                    eventMsg = "Berry Boost! +3 Spots";
-                } else if (newPos === 16) { // Burger
-                    newPos = 14;
-                    eventMsg = "Burger Slump! -2 Spots";
-                } else if (newPos === 19) { // Fry Trap 2
-                    newPos = 14;
-                    eventMsg = "Fry Trap! -5 Spots";
+                if (newPos === 1) { 
+                    newPos = 2; eventMsg = "Radish Power! +1 Spot";
+                } else if (newPos === 3) { 
+                    newPos = 7; eventMsg = "🌀 Portal Jump to 7!";
+                } else if (newPos === 5) { 
+                    newPos = 4; eventMsg = "Fry Grease! -1 Spot";
+                } else if (newPos === 12) { 
+                    newPos = 15; eventMsg = "Berry Boost! +3 Spots";
+                } else if (newPos === 16) { 
+                    newPos = 14; eventMsg = "Burger Slump! -2 Spots";
+                } else if (newPos === 19) { 
+                    newPos = 14; eventMsg = "Fry Trap! -5 Spots";
                 }
 
                 if (newPos !== positions[currentPlayer]) {
+                    // Initial Landing
+                    sendHoverlay(`spot-${positions[currentPlayer]}`);
+                    
                     setTimeout(() => {
                         msgBox.textContent = eventMsg;
-                        positions[currentPlayer] = newPos;
-                        localStorage.setItem(`flourish_p${currentPlayer}_pos`, newPos);
-                        posText.textContent = `Spot: ${newPos}`;
-                        sendHoverlay(`spot-${newPos}`);
+                        
+                        // WAIT 4 SECONDS FOR ANIMATION
+                        setTimeout(() => {
+                            positions[currentPlayer] = newPos;
+                            localStorage.setItem(`flourish_p${currentPlayer}_pos`, newPos);
+                            posText.textContent = `Spot: ${newPos}`;
+                            sendHoverlay(`spot-${newPos}`);
+                        }, 4000); 
+                        
                     }, 1200);
                 } else {
                     setTimeout(() => sendHoverlay(`spot-${positions[currentPlayer]}`), 600);
