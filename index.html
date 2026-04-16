@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Flourish 2-Player Controller</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -42,6 +42,7 @@
             box-shadow: 0 4px 0 #89b351;
             margin-bottom: 10px;
             cursor: pointer;
+            transition: all 0.1s;
         }
         .switch-player-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #89b351; }
 
@@ -66,7 +67,7 @@
 
         .pos-display { background: rgba(255, 255, 255, 0.15); padding: 8px 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; }
         .adjust-btn { background: rgba(255, 255, 255, 0.2); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .reset-btn { margin-top: 15px; padding: 8px 25px; background: var(--flourish-pink); color: white; border-radius: 99px; font-weight: bold; text-transform: uppercase; border: none; box-shadow: 0 4px 0 #b33a80; font-size: 0.8rem; cursor: pointer; }
+        .reset-btn { margin-top: 15px; padding: 6px 15px; background: var(--flourish-pink); color: white; border-radius: 99px; font-weight: bold; border: none; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -161,19 +162,22 @@
                 let newPos = positions[currentPlayer];
                 let eventMsg = "";
 
-                if (newPos === 1) { // White Radish +1
+                if (newPos === 1) { // White Radish
                     newPos = 2;
                     eventMsg = "Radish Power! +1 Spot";
                 } else if (newPos === 3) { // Portal
                     newPos = 7;
                     eventMsg = "🌀 Portal Jump to 7!";
-                } else if (newPos === 12) { // Blueberries +3
+                } else if (newPos === 5) { // Fry Trap 1
+                    newPos = 4;
+                    eventMsg = "Fry Grease! -1 Spot";
+                } else if (newPos === 12) { // Blueberries
                     newPos = 15;
                     eventMsg = "Berry Boost! +3 Spots";
-                } else if (newPos === 16) { // Burger -2
+                } else if (newPos === 16) { // Burger
                     newPos = 14;
                     eventMsg = "Burger Slump! -2 Spots";
-                } else if (newPos === 19) { // Fries -5
+                } else if (newPos === 19) { // Fry Trap 2
                     newPos = 14;
                     eventMsg = "Fry Trap! -5 Spots";
                 }
@@ -187,10 +191,8 @@
                         sendHoverlay(`spot-${newPos}`);
                     }, 1200);
                 } else {
-                    // Normal Move
                     setTimeout(() => sendHoverlay(`spot-${positions[currentPlayer]}`), 600);
                 }
-
             }, 1800);
         }
 
